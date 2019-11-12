@@ -216,10 +216,10 @@
 		if (version === '2') {
 		    treeMode = 'path'
 		}
-		//var autoFormat = Cookies.get('auto-format');
-		//if(typeof(autoFormat) === 'undefined') {
-			//autoFormat = 'false';
-		//}
+		var autoFormat = Cookies.get('auto-format');
+		if(typeof(autoFormat) === 'undefined') {
+			autoFormat = 'false';
+		}
 		
 		// get separator
 		$.ajax({
@@ -230,7 +230,6 @@
 			dataType: 'text',
 			success: function(data) {
 				separator = data;
-				console.log(data);
 			},
 			error: function(err) {
 				$.messager.alert('Error', $.toJSON(err), 'error');
@@ -365,9 +364,9 @@
 							resetValue()
 						} else {
 							editor.getSession().setValue(data.node.value);
-							//if (autoFormat === 'true') {
-								//format(aceMode);
-							//}
+							if (autoFormat === 'true' && data.node.value) {
+								format(aceMode);
+							}
 							var ttl = 0;
 							if (data.node.ttl) {
 								ttl = data.node.ttl;
@@ -416,6 +415,9 @@
 						} else {
 							if (data.node.value) {
 								editor.getSession().setValue(data.node.value);
+								if (autoFormat === 'true' && data.node.value) {
+									format(aceMode);
+								}
 								changeFooter(data.node.ttl, data.node.createdIndex, data.node.modifiedIndex);
 								changeModeBySuffix(node.path);
 							}
@@ -532,7 +534,7 @@
 				nodePath = ''
 			}
 			
-			if (treeMode == 'list') { // list mode
+			if (treeMode === 'list') { // list mode
 				if ($('#cnodeForm').form('validate')) {
 					var createNodePath = $('#name').textbox('getValue');
 					if (!createNodePath.startsWith(separator)) {
@@ -586,7 +588,7 @@
 					var pathArr = [];
 					var inputArr = $('#name').textbox('getValue').split(separator);
 					for (var i in inputArr) {
-						if ($.trim(inputArr[i]) != '') {
+						if ($.trim(inputArr[i]) !== '') {
 							pathArr.push(inputArr[i]);
 						}
 					}
@@ -610,14 +612,14 @@
 								var prePath = node.path;
 								for (var k in pathArr) {
 									var obj = {};
-									if (k == pathArr.length - 1) {
+									if (k === pathArr.length - 1) {
 										obj = {
 											id  :    getId(),
 											text:    pathArr[k],
-											state:   $('#dir').combobox('getValue') == 'true'?'open':'',
-											dir:     $('#dir').combobox('getValue') == 'true'?true:false,
-											iconCls: $('#dir').combobox('getValue') == 'true'?'icon-dir':'icon-text',
-											path:    (prePath==separator?(prePath + ''):(prePath + separator)) + pathArr[k],
+											state:   $('#dir').combobox('getValue') === 'true'?'open':'',
+											dir:     $('#dir').combobox('getValue') === 'true',
+											iconCls: $('#dir').combobox('getValue') === 'true'?'icon-dir':'icon-text',
+											path:    (prePath===separator?(prePath + ''):(prePath + separator)) + pathArr[k],
 											children:[]
 										};
 									} else {
@@ -627,7 +629,7 @@
 											state:   'closed',
 											dir:     true,
 											iconCls: 'icon-dir',
-											path:    (prePath==separator?(prePath + ''):(prePath + separator)) + pathArr[k],
+											path:    (prePath===separator?(prePath + ''):(prePath + separator)) + pathArr[k],
 											children:[]
 										};
 									}
@@ -748,6 +750,7 @@
 		function changeMode(mode) {
 			aceMode = mode;
 			Cookies.set('ace-mode', aceMode, {expires: 30});
+			Cookies.set('auto-format', 'true', {expires: 30});
 			$('#' + curIconMode).remove();
 			editor.getSession().setMode('ace/mode/' + aceMode);
 			curIconMode = 'mode_icon_' + aceMode;
@@ -761,7 +764,11 @@
 
 		function format(type) {
 			if (type === 'json') {
-				val = JSON.parse(editor.getValue());
+				try {
+					val = JSON.parse(editor.getValue());
+				} catch (e) {
+					val = editor.getValue();
+				}
 				editor.setValue(JSON.stringify(val, null, 4));
 				editor.getSession().setMode('ace/mode/' + 'json');
 				editor.clearSelection();
