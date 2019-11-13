@@ -1,4 +1,4 @@
-![image](https://github.com/evildecay/etcdkeeper/blob/master/logo/logo-horizontal.png)
+![image](https://github.com/zhangniko/etcdkeeper/blob/master/logo/logo-horizontal.png)
 ## ETCD Keeper
 * Lightweight etcd web client.
 * Support etcd 2.x and etcd 3.x.
@@ -54,10 +54,10 @@ Because the etcdv3 version uses the new storage concept, without the catalog con
 Etdkeeper official image. (https://hub.docker.com/r/evildecay/etcdkeeper)
 
 ## Screenshots
-![image](https://github.com/evildecay/etcdkeeper/blob/master/screenshots/ui.png)
+![image](https://github.com/zhangniko/etcdkeeper/blob/master/screenshots/ui.png)
 
 ## Demo
-![image](https://github.com/evildecay/etcdkeeper/blob/master/screenshots/ui.gif)
+![image](https://github.com/zhangniko/etcdkeeper/blob/master/screenshots/ui.gif)
 
 ## License
 MIT
